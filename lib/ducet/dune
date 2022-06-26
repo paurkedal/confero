@@ -1,0 +1,18 @@
+(library
+ (name confero_ducet)
+ (public_name confero.ducet)
+ (libraries confero uucp))
+
+(rule
+ (targets allkeys.ml)
+ (deps
+  (:gen %{exe:gen/gen_allkeys.exe})
+  (:inputs allkeys.txt allkeys_supp.txt))
+ (action (with-stdout-to %{targets} (run %{gen} %{inputs}))))
+
+(rule
+ (targets allkeys.txt)
+ (mode fallback)
+ (action
+  (run wget --quiet -O %{targets}
+    "https://www.unicode.org/Public/UCA/latest/allkeys.txt")))

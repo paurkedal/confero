@@ -1,0 +1,22 @@
+opam-version: "2.0"
+name: "confero"
+version: "0.0.1"
+synopsis: "Unicode Collation"
+maintainer: "Petter A. Urkedal <paurkedal@gmail.com>"
+authors: "Petter A. Urkedal <paurkedal@gmail.com>"
+license: "LGPL-3.0-or-later WITH LGPL-3.0-linking-exception"
+homepage: "https://paurkedal.github.com/paurkedal/confero/"
+bug-reports: "https://paurkedal.github.com/paurkedal/confero/issues"
+dev-repo: "git+https://github.com/paurkedal/confero.git"
+depends: [
+  "angstrom"
+  "angstrom-unix"
+  "dune"
+  "ocaml"
+  "uucp"
+  "uutf"
+  "uunf"
+]
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+]

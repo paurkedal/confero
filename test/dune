@@ -1,0 +1,20 @@
+(test
+ (name test_ducet)
+ (libraries fmt confero confero.ducet)
+ (deps (:data CollationTest_NON_IGNORABLE_SHORT.txt))
+ (action
+  (run %{test} %{data})))
+
+(rule
+ (targets CollationTest_NON_IGNORABLE_SHORT.txt)
+ (mode fallback)
+ (deps CollationTest.zip)
+ (action
+  (with-stdout-to %{targets}
+   (run unzip -p %{deps} CollationTest/%{targets}))))
+
+(rule
+ (targets CollationTest.zip)
+ (action
+  (run wget --quiet -O %{targets}
+        "https://www.unicode.org/Public/UCA/latest/CollationTest.zip")))

@@ -1,0 +1,3 @@
+(executable
+ (name confero)
+ (libraries cmdliner confero confero.ducet))

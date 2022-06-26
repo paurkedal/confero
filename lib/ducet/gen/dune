@@ -1,0 +1,3 @@
+(executable
+ (name gen_allkeys)
+ (libraries angstrom angstrom-unix fmt confero))
