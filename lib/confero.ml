@@ -41,8 +41,10 @@ let infer_collation_mapping ?lang ?mapping () =
    | Some m, _ | None, Some m -> m
    | None, None -> !generic_mapping)
 
-let collate ?encoding ?lang ?mapping s1 s2 =
+let collate ?encoding ?lang ?mapping ?(total = false) s1 s2 =
   let mapping = infer_collation_mapping ?lang ?mapping () in
   let k1 = Sort_key.of_string ?encoding ~mapping s1 in
   let k2 = Sort_key.of_string ?encoding ~mapping s2 in
-  Sort_key.compare k1 k2
+  (match Sort_key.compare k1 k2, total with
+   | 0, true -> String.compare s1 s2
+   | c, _ -> c)

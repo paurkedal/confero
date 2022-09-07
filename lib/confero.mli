@@ -58,6 +58,7 @@ val collate :
   ?encoding: Uutf.encoding ->
   ?lang: Iso639.Lang.t ->
   ?mapping: Collation_mapping.t ->
+  ?total: bool ->
   string -> string -> int
 (** [collate ?encoding ?lang ?mapping s1 s2] returns a negative integer, zero,
     or a positive integer when [s1] is ordered before [s2], [s1] and [s2] are
@@ -71,6 +72,18 @@ val collate :
         {!register_collation_mapping} then it is used, else
       - a mapping using Unicode code point ordering is used.
 
-    @param lang The language used to infer the collation mappping.
-    @param mapping The default mapping if not inferred from [lang].
-    @param encoding The encoding of the strings to compare. *)
+    Pass [~total:true] when a total order is required, e.g. when using it as the
+    implementation of {!Map.OrderedType.compare} or {!Set.OrderedType.compare}.
+
+    @param lang
+      The language used to infer the collation mappping.
+    @param mapping
+      The default mapping if not inferred from [lang].
+    @param encoding
+      The encoding of the strings to compare.
+    @param total
+      Ensure that the implied order is total.  This is done by falling back to
+      {!String.compare} if the result from the collation algorithm is zero.  The
+      default is [false], meaning that zero may be returned for two different
+      input strings due to Unicode normalization or due to a non-injective
+      collation element mapping. *)
