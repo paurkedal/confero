@@ -12,6 +12,7 @@ depends: [
   "angstrom"
   "angstrom-unix"
   "dune"
+  "iso639"
   "ocaml"
   "uucp"
   "uutf"

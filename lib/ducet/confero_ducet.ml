@@ -48,3 +48,5 @@ let mapping ch =
   (match Allkeys.mapping ch with
    | M.Accept _ as node -> node
    | M.Reject -> fallback ch)
+
+let () = Confero.register_collation_mapping mapping

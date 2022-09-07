@@ -1,4 +1,4 @@
 (library
  (public_name confero)
  (name confero)
- (libraries uutf uunf))
+ (libraries iso639 uutf uunf))

@@ -19,7 +19,30 @@ module Collation_element = Collation_element
 module Collation_mapping = Collation_mapping
 module Sort_key = Sort_key
 
-let collate ?encoding ~mapping s1 s2 =
+let identity_mapping ch =
+  let ce = Collation_element.create [|Uchar.to_int ch|] in
+  Collation_mapping.(Accept ([|ce|], fun _ -> Reject))
+
+let generic_mapping = ref identity_mapping
+let registry : (Iso639.Lang.t, Collation_mapping.t) Hashtbl.t = Hashtbl.create 7
+
+let register_collation_mapping ?lang mapping =
+  (match lang with
+   | None -> generic_mapping := mapping
+   | Some lang -> Hashtbl.replace registry lang mapping)
+
+let infer_mapping ?lang ?mapping () =
+  let from_lang =
+    (match lang with
+     | None -> None
+     | Some lang -> Hashtbl.find_opt registry lang)
+  in
+  (match from_lang, mapping with
+   | Some m, _ | None, Some m -> m
+   | None, None -> !generic_mapping)
+
+let collate ?encoding ?lang ?mapping s1 s2 =
+  let mapping = infer_mapping ?lang ?mapping () in
   let k1 = Sort_key.of_string ?encoding ~mapping s1 in
   let k2 = Sort_key.of_string ?encoding ~mapping s2 in
   Sort_key.compare k1 k2

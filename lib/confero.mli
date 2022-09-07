@@ -21,5 +21,37 @@ module Sort_key = Sort_key
 
 val collate :
   ?encoding: Uutf.encoding ->
-  mapping: Collation_mapping.t ->
+  ?lang: Iso639.Lang.t ->
+  ?mapping: Collation_mapping.t ->
   string -> string -> int
+(** [collate ?encoding ?mapping ?lang s1 s2] returns a negative integer, zero,
+    or a positive integer when [s1] is ordered before [s2], [s1] and [s2] are
+    unordered, or [s1] is ordered after [s2], respectively, according to a
+    collation mapping inferred from [mapping] and [lang] as follows:
+
+      - If [lang] is specified and a mapping has been registered for [lang] with
+        {!register_collation_mapping} then it is used, else
+      - if [mapping] is specified then it is used, else
+      - if a fall-back mapping has been registered with
+        {!register_collation_mapping} then it is used, else
+      - a mapping using Unicode code point ordering is used.
+
+    @param lang The language used to infer the collation mappping.
+    @param mapping The default mapping if not inferred from [lang].
+    @param encoding The encoding of the strings to compare. *)
+
+val register_collation_mapping :
+  ?lang: Iso639.Lang.t ->
+  Collation_mapping.t -> unit
+(** [register_collation_mapping ~lang m] registers [m] to be used for collating
+    string representing text in the language [lang].
+
+    [register_collation_mapping m] registers [m] to be used as a fall-back
+    mapping when [collate] is called without an explicit mapping and either the
+    language is unspecified or not mapping has been registered for the specified
+    language.  A good fall-back is provided by linking against the
+    [confero.ducet] sublibrary.
+
+    This function updates global state and should only be used during program
+    initialization by libraries providing collation mappings or by the main
+    entry point of the application. *)
