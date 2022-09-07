@@ -31,7 +31,7 @@ let register_collation_mapping ?lang mapping =
    | None -> generic_mapping := mapping
    | Some lang -> Hashtbl.replace registry lang mapping)
 
-let infer_mapping ?lang ?mapping () =
+let infer_collation_mapping ?lang ?mapping () =
   let from_lang =
     (match lang with
      | None -> None
@@ -42,7 +42,7 @@ let infer_mapping ?lang ?mapping () =
    | None, None -> !generic_mapping)
 
 let collate ?encoding ?lang ?mapping s1 s2 =
-  let mapping = infer_mapping ?lang ?mapping () in
+  let mapping = infer_collation_mapping ?lang ?mapping () in
   let k1 = Sort_key.of_string ?encoding ~mapping s1 in
   let k2 = Sort_key.of_string ?encoding ~mapping s2 in
   Sort_key.compare k1 k2

@@ -15,30 +15,9 @@
  * <http://www.gnu.org/licenses/> and <https://spdx.org>, respectively.
  *)
 
-module Collation_element = Collation_element
+(** {1 Collation Element Mappings} *)
+
 module Collation_mapping = Collation_mapping
-module Sort_key = Sort_key
-
-val collate :
-  ?encoding: Uutf.encoding ->
-  ?lang: Iso639.Lang.t ->
-  ?mapping: Collation_mapping.t ->
-  string -> string -> int
-(** [collate ?encoding ?mapping ?lang s1 s2] returns a negative integer, zero,
-    or a positive integer when [s1] is ordered before [s2], [s1] and [s2] are
-    unordered, or [s1] is ordered after [s2], respectively, according to a
-    collation mapping inferred from [mapping] and [lang] as follows:
-
-      - If [lang] is specified and a mapping has been registered for [lang] with
-        {!register_collation_mapping} then it is used, else
-      - if [mapping] is specified then it is used, else
-      - if a fall-back mapping has been registered with
-        {!register_collation_mapping} then it is used, else
-      - a mapping using Unicode code point ordering is used.
-
-    @param lang The language used to infer the collation mappping.
-    @param mapping The default mapping if not inferred from [lang].
-    @param encoding The encoding of the strings to compare. *)
 
 val register_collation_mapping :
   ?lang: Iso639.Lang.t ->
@@ -55,3 +34,43 @@ val register_collation_mapping :
     This function updates global state and should only be used during program
     initialization by libraries providing collation mappings or by the main
     entry point of the application. *)
+
+val infer_collation_mapping :
+  ?lang: Iso639.Lang.t ->
+  ?mapping: Collation_mapping.t ->
+  unit -> Collation_mapping.t
+(** [infer_collation_mapping ?lang ?mapping ()] returns the mapping which would
+    have been used by {!collate} given the same named arguments. *)
+
+(** {1 Collation Algorithm} *)
+
+module Collation_element = Collation_element
+(** Vectors of weights derived from an input string and a collation element
+    mapping. *)
+
+module Sort_key = Sort_key
+(** A compact representations of a collation elements as private strings whose
+    lexicographic byte order represent the collation order. *)
+
+(** {1 Collation} *)
+
+val collate :
+  ?encoding: Uutf.encoding ->
+  ?lang: Iso639.Lang.t ->
+  ?mapping: Collation_mapping.t ->
+  string -> string -> int
+(** [collate ?encoding ?lang ?mapping s1 s2] returns a negative integer, zero,
+    or a positive integer when [s1] is ordered before [s2], [s1] and [s2] are
+    unordered, or [s1] is ordered after [s2], respectively, according to a
+    collation mapping inferred from [mapping] and [lang] as follows:
+
+      - If [lang] is specified and a mapping has been registered for [lang] with
+        {!register_collation_mapping} then it is used, else
+      - if [mapping] is specified then it is used, else
+      - if a fall-back mapping has been registered with
+        {!register_collation_mapping} then it is used, else
+      - a mapping using Unicode code point ordering is used.
+
+    @param lang The language used to infer the collation mappping.
+    @param mapping The default mapping if not inferred from [lang].
+    @param encoding The encoding of the strings to compare. *)
