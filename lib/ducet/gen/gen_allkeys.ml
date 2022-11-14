@@ -120,18 +120,42 @@ module Int_forest = struct
      | [] -> fun _ -> failwith "bad key"
      | k :: ks -> forest_add k ks v)
 
+  let rec extend pfx u v =
+    let aux k u v =
+      (match u, v with
+       | Tree (Some _ as x, u'), Tree (_, v') ->
+          Some (Tree (x, extend pfx u' v'))
+       | Tree (None, u'), Tree (Some y, v') ->
+          let z = Array.append pfx y in
+          Some (Tree (Some z, extend pfx u' v'))
+       | Tree (None, _), Tree (None, _) ->
+          Fmt.failwith "Sublevel codepoint U+%04x is unmapped." k)
+    in
+    Int_map.union aux u v
+
   let well_formed forest_top =
     try
-      let rec complete (Tree (ces, forest)) =
-        Tree (Option.get ces, Int_map.map complete forest)
+      let rec complete pfx k (Tree (ces, forest)) =
+        (match ces with
+         | Some ces ->
+            Tree (ces, Int_map.mapi (complete ces) forest)
+         | None ->
+            assert (pfx <> [||]);
+            (match Int_map.find_opt k forest_top with
+             | None | Some (Tree (None, _)) ->
+                Fmt.failwith "Toplevel codepoint U+%04x is unmapped." k
+             | Some (Tree (Some ces', forest')) ->
+                let ces'' = Array.append pfx ces' in
+                let forest'' = extend pfx forest forest' in
+                Tree (ces'', Int_map.mapi (complete ces') forest'')))
       in
-      Int_map.map complete forest_top
-    with Invalid_argument _ ->
+      Int_map.mapi (complete [||]) forest_top
+    with Failure msg ->
       let rec recurse ks k (Tree (ces, forest)) =
         let ks' = k :: ks in
         if ces = None then
-          Fmt.epr "Not well-formed, @[%a@] is missing.\n"
-            Fmt.(list ~sep:sp (fmt "U+%04x")) (List.rev ks');
+          Fmt.epr "Not well-formed, @[%a@] is missing: %s.\n"
+            Fmt.(list ~sep:sp (fmt "U+%04x")) (List.rev ks') msg;
         Int_map.iter (recurse ks') forest
       in
       Int_map.iter (recurse []) forest_top;

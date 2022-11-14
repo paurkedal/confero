@@ -7,7 +7,7 @@
  (targets allkeys.ml)
  (deps
   (:gen %{exe:gen/gen_allkeys.exe})
-  (:inputs allkeys.txt allkeys_supp.txt))
+  (:inputs allkeys.txt))
  (action (with-stdout-to %{targets} (run %{gen} %{inputs}))))
 
 (rule
