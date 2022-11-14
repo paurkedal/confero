@@ -17,4 +17,4 @@
  (targets CollationTest.zip)
  (action
   (run wget --quiet -O %{targets}
-        "https://www.unicode.org/Public/UCA/latest/CollationTest.zip")))
+        "https://www.unicode.org/Public/UCA/15.0.0/CollationTest.zip")))

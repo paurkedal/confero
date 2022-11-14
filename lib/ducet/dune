@@ -15,4 +15,4 @@
  (mode fallback)
  (action
   (run wget --quiet -O %{targets}
-    "https://www.unicode.org/Public/UCA/latest/allkeys.txt")))
+    "https://www.unicode.org/Public/UCA/15.0.0/allkeys.txt")))
