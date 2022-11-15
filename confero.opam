@@ -12,12 +12,18 @@ depends: [
   "angstrom"
   "angstrom-unix"
   "dune"
+  "fmt" {with-test}
   "iso639"
-  "ocaml"
-  "uucp"
+  "ocaml" {>= "4.08.1"}
+  "uucp" {>= "15.0.0"}
+  "uunf" {>= "15.0.0"}
   "uutf"
-  "uunf"
 ]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "build" "@doc" "-p" name "-j" jobs] {with-doc}
 ]
+extra-source "lib/ducet/allkeys.txt" {
+  src: "https://www.unicode.org/Public/UCA/15.0.0/allkeys.txt"
+  checksum: "sha512=26dda70e65d38afd5da36fce32a89615880a50e10518545d638fc0112aa7816e3c245bd719de7d55dd205c82581415fc04a86f3401f3e91607f0caaf368c0761"
+}
