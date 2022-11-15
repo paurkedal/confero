@@ -120,14 +120,14 @@ module Int_forest = struct
      | [] -> fun _ -> failwith "bad key"
      | k :: ks -> forest_add k ks v)
 
-  let rec extend pfx u v =
+  let rec extend (pfx, v) u =
     let aux k u v =
       (match u, v with
        | Tree (Some _ as x, u'), Tree (_, v') ->
-          Some (Tree (x, extend pfx u' v'))
+          Some (Tree (x, extend (pfx, v') u'))
        | Tree (None, u'), Tree (Some y, v') ->
           let z = Array.append pfx y in
-          Some (Tree (Some z, extend pfx u' v'))
+          Some (Tree (Some z, extend (pfx, v') u'))
        | Tree (None, _), Tree (None, _) ->
           Fmt.failwith "Sublevel codepoint U+%04x is unmapped." k)
     in
@@ -146,8 +146,8 @@ module Int_forest = struct
                 Fmt.failwith "Toplevel codepoint U+%04x is unmapped." k
              | Some (Tree (Some ces', forest')) ->
                 let ces'' = Array.append pfx ces' in
-                let forest'' = extend pfx forest forest' in
-                Tree (ces'', Int_map.mapi (complete ces') forest'')))
+                let forest'' = extend (pfx, forest') forest in
+                Tree (ces'', Int_map.mapi (complete ces'') forest'')))
       in
       Int_map.mapi (complete [||]) forest_top
     with Failure msg ->
