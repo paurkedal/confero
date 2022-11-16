@@ -9,11 +9,11 @@ homepage: "https://paurkedal.github.com/paurkedal/confero/"
 bug-reports: "https://paurkedal.github.com/paurkedal/confero/issues"
 dev-repo: "git+https://github.com/paurkedal/confero.git"
 depends: [
-  "angstrom"
+  "angstrom" {>= "0.14.0"}
   "angstrom-unix"
   "cmdliner"
   "dune" {>= "2.9"}
-  "fmt"
+  "fmt" {>= "0.8.7"}
   "iso639"
   "ocaml" {>= "4.08.1"}
   "uucp" {>= "15.0.0"}
