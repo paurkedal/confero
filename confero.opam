@@ -11,8 +11,9 @@ dev-repo: "git+https://github.com/paurkedal/confero.git"
 depends: [
   "angstrom"
   "angstrom-unix"
-  "dune"
-  "fmt" {with-test}
+  "cmdliner"
+  "dune" {>= "2.9"}
+  "fmt"
   "iso639"
   "ocaml" {>= "4.08.1"}
   "uucp" {>= "15.0.0"}
