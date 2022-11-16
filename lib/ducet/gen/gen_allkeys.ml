@@ -197,11 +197,14 @@ let rec emit_step name forest =
   Int_map.iter emit_deps forest;
   let k_min = fst (Int_map.min_binding forest) in
   let k_max = fst (Int_map.max_binding forest) in
-  if 4 * Int_map.cardinal forest < k_max - k_min + 1 then begin
+  let is_sparse = true (* 4 * Int_map.cardinal forest < k_max - k_min + 1 *) in
+  if is_sparse then begin
     Fmt.pr "let %s ch = match Uchar.to_int ch with@." name;
     Int_map.iter bind_sparse forest;
     Fmt.pr " | _ -> M.Reject@."
   end else begin
+    (* This causes stack overflow for ocaml < 4 for small stacks, and is maybe
+     * not so important anyway after reducing the block_size. *)
     Fmt.pr "let %s =@." name;
     Fmt.pr "  let a = [|@.";
     for k = k_min to k_max do
@@ -217,7 +220,7 @@ let rec emit_step name forest =
   end
 
 let emit_top forest =
-  let block_size = 0x1000 in
+  let block_size = 0x100 in
   let rec loop blocks k forest =
     if Int_map.is_empty forest then List.rev blocks else
     let k' = k + block_size in
