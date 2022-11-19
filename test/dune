@@ -15,6 +15,7 @@
 
 (rule
  (targets CollationTest.zip)
+ (mode fallback)
  (action
   (run wget --quiet -O %{targets}
         "https://www.unicode.org/Public/UCA/15.0.0/CollationTest.zip")))
